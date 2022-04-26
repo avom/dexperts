@@ -165,7 +165,6 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="External\CustomToolsAPI.pas"/>
         <DCCReference Include="Source\Dexperts.InitializeOtaInterfaces.pas"/>
         <DCCReference Include="Source\Dexperts.SpellCheckWizard.pas"/>
         <DCCReference Include="Source\Dexperts.EditViewNotifier.pas"/>

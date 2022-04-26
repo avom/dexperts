@@ -19,7 +19,8 @@ implementation
 
 uses
   System.Classes,
-  System.SysUtils;
+  System.SysUtils,
+  Dexperts.PathProvider;
 
 { TDexpertsDictionary }
 
@@ -28,7 +29,7 @@ begin
   FDictionary := TDictionary<string, Boolean>.Create;
   var Strings := TStringList.Create;
   try
-    Strings.LoadFromFile('c:\tools\delphi_experts\dictionary.txt');
+    Strings.LoadFromFile(TPathProvider.DictionaryFilePath);
     for var S in Strings do
       FDictionary.AddOrSetValue(S.ToLower, True);
   finally

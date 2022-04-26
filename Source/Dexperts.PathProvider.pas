@@ -9,9 +9,11 @@ type
   private
     class function GetAppDataDir: string; static;
     class function GetSettingsFilePath: string; static;
+    class function GetDictionaryFilePath: string; static;
   public
     class property AppDataDir: string read GetAppDataDir;
     class property SettingsFilePath: string read GetSettingsFilePath;
+    class property DictionaryFilePath: string read GetDictionaryFilePath;
   end;
 
 implementation
@@ -24,6 +26,11 @@ uses
 class function TPathProvider.GetAppDataDir: string;
 begin
   Result := TPath.Combine(TPath.GetDownloadsPath, AppDir);
+end;
+
+class function TPathProvider.GetDictionaryFilePath: string;
+begin
+  Result := TPath.Combine(AppDataDir, 'dictionary.txt');
 end;
 
 class function TPathProvider.GetSettingsFilePath: string;

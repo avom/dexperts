@@ -15,7 +15,6 @@ library Dexperts;
 uses
   System.Classes,
   System.SysUtils,
-  CustomToolsAPI in 'External\CustomToolsAPI.pas',
   Dexperts.InitializeOtaInterfaces in 'Source\Dexperts.InitializeOtaInterfaces.pas',
   Dexperts.SpellCheckWizard in 'Source\Dexperts.SpellCheckWizard.pas',
   Dexperts.EditViewNotifier in 'Source\Dexperts.EditViewNotifier.pas',
