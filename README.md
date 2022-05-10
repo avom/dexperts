@@ -11,6 +11,7 @@ Settings are loaded from user AppData\Local\Dexperts\settings.json.
 	"spelling_error": {
 		"color": "red",
 		"style": "sin"
+	}
 }
 ```
 
