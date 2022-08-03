@@ -26,7 +26,21 @@ uses
   Dexperts.SourceEditorNotifier in 'Source\Dexperts.SourceEditorNotifier.pas',
   Dexperts.Dictionary in 'Source\Dexperts.Dictionary.pas',
   Dexperts.Settings in 'Source\Dexperts.Settings.pas',
-  Dexperts.PathProvider in 'Source\Dexperts.PathProvider.pas';
+  Dexperts.PathProvider in 'Source\Dexperts.PathProvider.pas',
+  Dexperts.Common.BaseDockableForm in 'Source\Common\Dexperts.Common.BaseDockableForm.pas' {BaseDockableForm},
+  Dexperts.TestRunner.DirectoryWatcher in 'Source\TestRunner\Dexperts.TestRunner.DirectoryWatcher.pas',
+  Dexperts.TestRunner.Wizard in 'Source\TestRunner\Dexperts.TestRunner.Wizard.pas',
+  Dexperts.TestRunner.Form in 'Source\TestRunner\Dexperts.TestRunner.Form.pas' {TestRunnerForm},
+  Dexperts.TestRunner.Compiler in 'Source\TestRunner\Dexperts.TestRunner.Compiler.pas',
+  Dexperts.TestRunner.ProcessRunner in 'Source\TestRunner\Dexperts.TestRunner.ProcessRunner.pas',
+  Dexperts.TestRunner.DUnitXRunner in 'Source\TestRunner\Dexperts.TestRunner.DUnitXRunner.pas',
+  Dexperts.TestRunner.Status in 'Source\TestRunner\Dexperts.TestRunner.Status.pas',
+  Dexperts.TestRunner.AutoTester in 'Source\TestRunner\Dexperts.TestRunner.AutoTester.pas',
+  Dexperts.TestRunner.Interfaces in 'Source\TestRunner\Dexperts.TestRunner.Interfaces.pas',
+  Dexperts.Common.ProjectSettings in 'Source\Common\Dexperts.Common.ProjectSettings.pas',
+  Dexperts.Common.Exceptions in 'Source\Dexperts.Common.Exceptions.pas',
+  Dexperts.Common.Interfaces in 'Source\Common\Dexperts.Common.Interfaces.pas',
+  Dexperts.Common.ActiveProjectProvider in 'Source\Common\Dexperts.Common.ActiveProjectProvider.pas';
 
 {$R *.res}
 

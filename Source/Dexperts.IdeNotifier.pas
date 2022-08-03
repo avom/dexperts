@@ -93,7 +93,9 @@ begin
     ofnProjectDesktopSave: ;
     ofnPackageInstalled: ;
     ofnPackageUninstalled: ;
-    ofnActiveProjectChanged: ;
+    ofnActiveProjectChanged:
+      begin
+      end;
     ofnProjectOpenedFromTemplate: ;
     ofnBeginProjectGroupOpen: ;
     ofnEndProjectGroupOpen: ;

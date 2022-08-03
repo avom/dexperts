@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{FADBDD4E-1827-432A-A49F-CD27B787E694}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Dexperts.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Tests\DexpertsTests.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Dexperts">
+        <MSBuild Projects="Dexperts.dproj"/>
+    </Target>
+    <Target Name="Dexperts:Clean">
+        <MSBuild Projects="Dexperts.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Dexperts:Make">
+        <MSBuild Projects="Dexperts.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DexpertsTests">
+        <MSBuild Projects="Tests\DexpertsTests.dproj"/>
+    </Target>
+    <Target Name="DexpertsTests:Clean">
+        <MSBuild Projects="Tests\DexpertsTests.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DexpertsTests:Make">
+        <MSBuild Projects="Tests\DexpertsTests.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Dexperts;DexpertsTests"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Dexperts:Clean;DexpertsTests:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Dexperts:Make;DexpertsTests:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
