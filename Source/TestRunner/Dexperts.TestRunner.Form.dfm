@@ -9,7 +9,7 @@ inherited TestRunnerForm: TTestRunnerForm
   object StatusLabel: TLabel
     Left = 8
     Top = 8
-    Width = 354
+    Width = 273
     Height = 25
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
@@ -39,6 +39,7 @@ inherited TestRunnerForm: TTestRunnerForm
     Checked = True
     State = cbChecked
     TabOrder = 1
+    OnClick = AutoRunCheckBoxClick
   end
   object RunButton: TButton
     Left = 287
@@ -48,14 +49,6 @@ inherited TestRunnerForm: TTestRunnerForm
     Anchors = [akTop, akRight]
     Caption = 'Run'
     TabOrder = 2
-    Visible = False
     OnClick = RunButtonClick
-  end
-  object ProjectCheckTimer: TTimer
-    Enabled = False
-    Interval = 60000
-    OnTimer = ProjectCheckTimerTimer
-    Left = 404
-    Top = 372
   end
 end

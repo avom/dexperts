@@ -2,12 +2,18 @@ unit Dexperts.TestRunner.ProcessRunner;
 
 interface
 
-function ExecAndCapture(const ACmdLine: string; var AOutput: string): Integer;
+uses
+  Dexperts.TestRunner.Interfaces;
+
+type
+  TProcessRunner = class(TInterfacedObject, IProcessRunner)
+  public
+    function ExecAndCapture(const ACmdLine: string; var AOutput: string): Integer;
+  end;
 
 implementation
 
 uses
-//  System.AnsiStrings,
   System.SysUtils,
   Winapi.Windows;
 
@@ -18,7 +24,7 @@ type
   end;
 
 // Original source: https://gist.github.com/hotsoft-desenv2/bed7a75bbe19f19b163d2059fe85c57e
-function ExecAndCapture(const ACmdLine: string; var AOutput: string): Integer;
+function TProcessRunner.ExecAndCapture(const ACmdLine: string; var AOutput: string): Integer;
 const
   cBufferSize = 2048;
 var
@@ -90,7 +96,6 @@ begin
               var Chunk: string;
               SetString(Chunk, PAnsiChar(vBuffer), vReadBytes);
               AOutput := AOutput + Chunk;
-//              AOutput := AOutput + string(PAnsiChar(vBuffer));
               Inc(Result, vReadBytes);
             end;
           until (vReadBytes < cBufferSize);

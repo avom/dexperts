@@ -20,16 +20,15 @@ uses
   Dexperts.TestRunner.Status;
 
 type
-  TTestRunnerForm = class(TBaseDockableForm)
+  TTestRunnerForm = class(TBaseDockableForm, IActiveProjectObserver)
     FailedTestsListBox: TListBox;
     AutoRunCheckBox: TCheckBox;
     StatusLabel: TLabel;
     RunButton: TButton;
-    ProjectCheckTimer: TTimer;
     procedure RunButtonClick(Sender: TObject);
     procedure FormHide(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure ProjectCheckTimerTimer(Sender: TObject);
+    procedure AutoRunCheckBoxClick(Sender: TObject);
   private const
     StatusUnknownColor = clOlive;
     StatusFailedColor = clRed;
@@ -39,6 +38,7 @@ type
     FStatus: TStatus;
     FActiveProjectProvider: IActiveProjectProvider;
     FIsAutoTesterRunning: Boolean;
+    procedure OnActiveProjectChanged;
     procedure OnStatusChanged(Sender: TObject);
     procedure StartAutoTesterThread;
     procedure StopAutoTesterThread;
@@ -57,6 +57,7 @@ implementation
 uses
   System.IOUtils,
   ToolsAPI,
+  Dexperts.Common.ActiveProjectObserverManager,
   Dexperts.Common.ActiveProjectProvider,
   Dexperts.Common.ProjectSettings,
   Dexperts.TestRunner.Compiler,
@@ -67,15 +68,23 @@ uses
 
 { TTestRunnerForm }
 
+procedure TTestRunnerForm.AutoRunCheckBoxClick(Sender: TObject);
+begin
+  inherited;
+  if AutoRunCheckBox.Checked then
+    FAutoTester.Unpause
+  else
+    FAutoTester.Pause;
+end;
+
 constructor TTestRunnerForm.Create(AOwner: TComponent);
 begin
   inherited;
-//  TStatus.Instance.OnChanged := OnStatusChanged;
-
   FActiveProjectProvider := TActiveProjectProvider.Create;
   FAutoTester := TAutoTester.Instance;
   FStatus := TStatus.Create;
   FStatus.OnChanged := OnStatusChanged;
+  TActiveProjectObserverManager.Instance.Subscribe(Self);
 end;
 
 class procedure TTestRunnerForm.CreateForm;
@@ -86,7 +95,7 @@ end;
 
 destructor TTestRunnerForm.Destroy;
 begin
-//  TStatus.Instance.OnChanged := nil;
+  TActiveProjectObserverManager.Instance.Unsubscribe(Self);
   FAutoTester.Stop;
   FStatus.Free;
   inherited;
@@ -95,7 +104,6 @@ end;
 procedure TTestRunnerForm.FormHide(Sender: TObject);
 begin
   inherited;
-  ProjectCheckTimer.Enabled := False;
   StopAutoTesterThread;
 end;
 
@@ -104,29 +112,33 @@ begin
   inherited;
 
   StartAutoTesterThread;
-  ProjectCheckTimer.Enabled := True;
+end;
+
+procedure TTestRunnerForm.OnActiveProjectChanged;
+begin
+  if FIsAutoTesterRunning then
+  begin
+    var Restarted := False;
+    var ProjectFileName := FActiveProjectProvider.GetProjectFilePath;
+    if ProjectFileName <> '' then
+    begin
+      var SettingsFileName := ChangeFileExt(ProjectFileName, '.dexperts');
+      if TFile.Exists(SettingsFileName) then
+      begin
+        var Settings := TProjectSettings.LoadFromFile(SettingsFileName);
+        FAutoTester.Restart(Settings, FStatus);
+        Restarted := True;
+      end;
+    end;
+    if Restarted then
+      StopAutoTesterThread;
+  end
+  else
+    StartAutoTesterThread;
 end;
 
 procedure TTestRunnerForm.OnStatusChanged(Sender: TObject);
 begin
-//  if FStatus.State = TTestingState.Testing then
-//  begin
-//    TThread.CreateAnonymousThread(
-//      procedure
-//      begin
-//        var Runner := TDunitXRunner.Create;
-//        try
-//          var FailMessages := Runner.Run(LoadTestProjectArgs.TestExe);
-//          if FailMessages = nil then
-//            FStatus.TestsSucceeded
-//          else
-//            FStatus.TestsFailed(FailMessages);
-//        finally
-//          Runner.Free;
-//        end;
-//      end).Start;
-//  end;
-
   TThread.Queue(nil,
     procedure
     begin
@@ -148,12 +160,6 @@ begin
     end);
 end;
 
-procedure TTestRunnerForm.ProjectCheckTimerTimer(Sender: TObject);
-begin
-  inherited;
-  //
-end;
-
 class procedure TTestRunnerForm.RemoveForm;
 begin
   FreeDockableForm(FInstance);
@@ -161,7 +167,7 @@ end;
 
 procedure TTestRunnerForm.RunButtonClick(Sender: TObject);
 begin
-//  CompileActiveProject;
+  FAutoTester.QueueTesting;
 end;
 
 class procedure TTestRunnerForm.ShowForm;

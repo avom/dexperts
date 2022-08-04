@@ -201,6 +201,7 @@ begin
   TMonitor.Enter(FLock);
   try
     FState := TTestingState.TestsPassed;
+    FFailedTests := nil;
   finally
     TMonitor.Exit(FLock);
   end;

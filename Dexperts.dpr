@@ -40,7 +40,8 @@ uses
   Dexperts.Common.ProjectSettings in 'Source\Common\Dexperts.Common.ProjectSettings.pas',
   Dexperts.Common.Exceptions in 'Source\Dexperts.Common.Exceptions.pas',
   Dexperts.Common.Interfaces in 'Source\Common\Dexperts.Common.Interfaces.pas',
-  Dexperts.Common.ActiveProjectProvider in 'Source\Common\Dexperts.Common.ActiveProjectProvider.pas';
+  Dexperts.Common.ActiveProjectProvider in 'Source\Common\Dexperts.Common.ActiveProjectProvider.pas',
+  Dexperts.Common.ActiveProjectObserverManager in 'Source\Common\Dexperts.Common.ActiveProjectObserverManager.pas';
 
 {$R *.res}
 

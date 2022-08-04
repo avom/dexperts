@@ -6,6 +6,11 @@ uses
   System.Classes;
 
 type
+  IProcessRunner = interface
+    ['{7174111A-9B98-4BAD-BA5A-0E9D319F6F29}']
+    function ExecAndCapture(const ACmdLine: string; var AOutput: string): Integer;
+  end;
+
   ICompiler = interface
     ['{03CE5D87-24C1-4789-93A4-B913D46AA579}']
     function Compile(const ProjectFileName, RsVarsPath, Args: string): Boolean;

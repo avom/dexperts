@@ -27,6 +27,7 @@ implementation
 
 uses
   System.SysUtils,
+  Dexperts.Common.ActiveProjectObserverManager,
   Dexperts.EditorNotifier;
 
 { TIdeNotifier }
@@ -94,8 +95,7 @@ begin
     ofnPackageInstalled: ;
     ofnPackageUninstalled: ;
     ofnActiveProjectChanged:
-      begin
-      end;
+      TActiveProjectObserverManager.Instance.Notify;
     ofnProjectOpenedFromTemplate: ;
     ofnBeginProjectGroupOpen: ;
     ofnEndProjectGroupOpen: ;

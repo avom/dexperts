@@ -8,10 +8,10 @@ type
     type
       TTestProject = record
       private
-          FDproj: string;
-          FRsVarsPath: string;
-          FExe: string;
-          FMsBuildArgs: string;
+        FDproj: string;
+        FRsVarsPath: string;
+        FExe: string;
+        FMsBuildArgs: string;
       public
         property Dproj: string read FDproj;
         property Exe: string read FExe;
@@ -24,6 +24,8 @@ type
         FTestProject: TTestProject;
         FWatchPaths: TArray<string>;
       public
+        const TestQueuePeekIntervalMs = 1000;
+
         property TestProject: TTestProject read FTestProject;
         property WatchPaths: TArray<string> read FWatchPaths;
       end;

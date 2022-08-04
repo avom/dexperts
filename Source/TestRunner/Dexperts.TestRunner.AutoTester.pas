@@ -16,9 +16,15 @@ type
     FSettings: TProjectSettings;
     FStatus: TStatus;
     FTestRunner: ITestRunner;
-    class var FInstance: TAutoTester;
+    FRunLock: TObject;
+    FQueueLock: TObject;
+    FStopped: Boolean;
+    FIsTestingQueued: Boolean;
+    FIsTestingPaused: Boolean;
+    procedure SetIsTestingQueued(Value: Boolean);
     procedure BuildAndTest;
     procedure OnDirectoryChange(Sender: TObject);
+    class var FInstance: TAutoTester;
     class constructor ClassCreate;
     class destructor ClassDestroy;
   public
@@ -30,6 +36,12 @@ type
 
     procedure Start(Settings: TProjectSettings; Status: TStatus);
     procedure Stop;
+    procedure Restart(Settings: TProjectSettings; Status: TStatus);
+
+    procedure Pause;
+    procedure Unpause;
+
+    procedure QueueTesting;
 
     class property Instance: TAutoTester read FInstance;
   end;
@@ -37,8 +49,10 @@ type
 implementation
 
 uses
+  System.Classes,
   Dexperts.TestRunner.DirectoryWatcher,
-  Dexperts.TestRunner.DUnitXRunner;
+  Dexperts.TestRunner.DUnitXRunner,
+  Dexperts.TestRunner.ProcessRunner;
 
 { TAutoTester }
 
@@ -66,7 +80,10 @@ end;
 
 class constructor TAutoTester.ClassCreate;
 begin
-  FInstance := TAutoTester.Create(TDirectoryWatcher.Create, TCompiler.Create, TDUnitXRunner.Create);
+  FInstance := TAutoTester.Create(
+    TDirectoryWatcher.Create,
+    TCompiler.Create(TProcessRunner.Create),
+    TDUnitXRunner.Create(TProcessRunner.Create));
 end;
 
 class destructor TAutoTester.ClassDestroy;
@@ -88,31 +105,97 @@ begin
   FTestRunner := TestRunner;
 
   FDirectoryWatcher.OnChange := OnDirectoryChange;
+
+  FRunLock := TObject.Create;
+  FQueueLock := TObject.Create;
 end;
 
 destructor TAutoTester.Destroy;
 begin
   FDirectoryWatcher.OnChange := nil;
+  Stop;
+  TMonitor.Enter(FRunLock);
+  TMonitor.Exit(FRunLock);
+  FRunLock.Free;
+  FQueueLock.Free;
   inherited;
 end;
 
 procedure TAutoTester.OnDirectoryChange(Sender: TObject);
 begin
-  BuildAndTest;
+  QueueTesting;
+end;
+
+procedure TAutoTester.Pause;
+begin
+  FIsTestingPaused := True;
+end;
+
+procedure TAutoTester.QueueTesting;
+begin
+  SetIsTestingQueued(True);
+end;
+
+procedure TAutoTester.Restart(Settings: TProjectSettings; Status: TStatus);
+begin
+  TThread.CreateAnonymousThread(
+    procedure
+    begin
+      Stop;
+      Start(Settings, FStatus);
+    end);
 end;
 
 procedure TAutoTester.Stop;
 begin
+  FStopped := True;
   FDirectoryWatcher.Terminate;
+end;
+
+procedure TAutoTester.Unpause;
+begin
+  FIsTestingPaused := False;
+end;
+
+procedure TAutoTester.SetIsTestingQueued(Value: Boolean);
+begin
+  TMonitor.Enter(FQueueLock);
+  try
+    FIsTestingQueued := Value;
+  finally
+    TMonitor.Exit(FQueueLock);
+  end;
 end;
 
 procedure TAutoTester.Start(Settings: TProjectSettings; Status: TStatus);
 begin
-  FSettings := Settings;
-  FStatus := Status;
-  FStatus.Wait;
-  BuildAndTest;
-  FDirectoryWatcher.Watch(FSettings.AutoTest.WatchPaths);
+  TMonitor.Enter(FRunLock);
+  try
+    FStopped := False;
+    FSettings := Settings;
+    FStatus := Status;
+    FStatus.Wait;
+
+    BuildAndTest;
+
+    TThread.CreateAnonymousThread(
+      procedure
+      begin
+        FDirectoryWatcher.Watch(FSettings.AutoTest.WatchPaths);
+      end).Start;
+
+    while not FStopped do
+    begin
+      if FIsTestingQueued and (not FIsTestingPaused) then
+      begin
+        BuildAndTest;
+        SetIsTestingQueued(False);
+      end;
+      TThread.Sleep(Settings.AutoTest.TestQueuePeekIntervalMs);
+    end;
+  finally
+    TMonitor.Exit(FRunLock);
+  end;
 end;
 
 end.

@@ -7,7 +7,11 @@ uses
 
 type
   TDunitXRunner = class(TInterfacedObject, ITestRunner)
+  private
+    FProcessRunner: IProcessRunner;
   public
+    constructor Create(const ProcessRunner: IProcessRunner);
+
     function Run(const ExeFile: string): TArray<string>;
   end;
 
@@ -21,6 +25,12 @@ uses
 
 { TDunitXRunner }
 
+constructor TDunitXRunner.Create(const ProcessRunner: IProcessRunner);
+begin
+  Assert(ProcessRunner <> nil, 'ProcessRunner must not be nil');
+  FProcessRunner := ProcessRunner;
+end;
+
 function TDunitXRunner.Run(const ExeFile: string): TArray<string>;
 begin
   Result := nil;
@@ -28,7 +38,7 @@ begin
     Exit;
 
   var Output := '';
-  ExecAndCapture(Exefile + ' --exit:Continue', Output);
+  FProcessRunner.ExecAndCapture(Exefile + ' --exit:Continue', Output);
 
   var Tests := TStringList.Create;
   try
