@@ -19,6 +19,7 @@ implementation
 
 uses
   System.Classes,
+  System.IOUtils,
   System.SysUtils,
   Dexperts.PathProvider;
 
@@ -26,6 +27,9 @@ uses
 
 class constructor TDexpertsDictionary.CreateClass;
 begin
+  if not TFile.Exists(TPathProvider.DictionaryFilePath) then
+    Exit;
+
   FDictionary := TDictionary<string, Boolean>.Create;
   var Strings := TStringList.Create;
   try
@@ -44,7 +48,7 @@ end;
 
 class function TDexpertsDictionary.IsValid(const S: string): Boolean;
 begin
-  Result := FDictionary.ContainsKey(S.ToLower);
+  Result := (FDictionary = nil) or FDictionary.ContainsKey(S.ToLower)
 end;
 
 end.
