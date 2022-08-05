@@ -64,7 +64,7 @@ begin
 
   FStatus.Compile;
   var Project := FSettings.AutoTest.TestProject;
-  var CompileResult := FCompiler.Compile(Project.Dproj, Project.RsVarsPath, Project.MsBuildArgs);
+  var CompileResult := FCompiler.Compile(Project.Dproj, Project.CompileCommands);
   if CompileResult then
   begin
     FStatus.CompileSucceeded;

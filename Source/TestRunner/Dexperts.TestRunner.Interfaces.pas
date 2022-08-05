@@ -13,7 +13,7 @@ type
 
   ICompiler = interface
     ['{03CE5D87-24C1-4789-93A4-B913D46AA579}']
-    function Compile(const ProjectFileName, RsVarsPath, Args: string): Boolean;
+    function Compile(const ProjectFileName: string; const Commands: TArray<string>): Boolean;
   end;
 
   IDirectoryWatcher = interface

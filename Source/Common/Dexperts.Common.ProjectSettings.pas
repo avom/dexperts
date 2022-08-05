@@ -2,6 +2,9 @@ unit Dexperts.Common.ProjectSettings;
 
 interface
 
+uses
+  System.SysUtils;
+
 type
   TProjectSettings = record
   private
@@ -9,14 +12,12 @@ type
       TTestProject = record
       private
         FDproj: string;
-        FRsVarsPath: string;
         FExe: string;
-        FMsBuildArgs: string;
+        FCompileCommands: TArray<string>;
       public
         property Dproj: string read FDproj;
         property Exe: string read FExe;
-        property MsBuildArgs: string read FMsBuildArgs;
-        property RsVarsPath: string read FRsVarsPath;
+        property CompileCommands: TArray<string> read FCompileCommands;
       end;
 
       TAutoTest = record
@@ -42,7 +43,6 @@ implementation
 uses
   System.JSON,
   System.IOUtils,
-  System.SysUtils,
   Dexperts.Common.Exceptions;
 
 { TProjectSettings }
@@ -58,8 +58,7 @@ class function TProjectSettings.LoadFromFile(const FileName: string): TProjectSe
     Result.FExe := Json.GetValue<string>('exe');
     if Result.FExe <> '' then
       Result.FExe := TPath.Combine(ProjectDir, Result.FExe);
-    Result.FMsBuildArgs := Json.GetValue<string>('msbuild_args');
-    Result.FRsVarsPath := Json.GetValue<string>('rsvars_path');
+    Result.FCompileCommands := Json.GetValue<TArray<string>>('compile_commands');
   end;
 
   function ParseAutoTest(Json: TJSONValue): TAutoTest;

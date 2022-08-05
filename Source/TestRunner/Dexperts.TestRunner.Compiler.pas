@@ -20,23 +20,25 @@ type
   public
     constructor Create(const ProcessRunner: IProcessRunner);
 
-    function Compile(const ProjectFileName, RsVarsPath, Args: string): Boolean;
+    function Compile(const ProjectFileName: string; const Commands: TArray<string>): Boolean;
   end;
 
 implementation
 
 uses
   System.StrUtils,
+  System.SysUtils,
   Dexperts.TestRunner.ProcessRunner;
 
 { TCompiler }
 
-function TCompiler.Compile(const ProjectFileName, RsVarsPath, Args: string): Boolean;
+function TCompiler.Compile(const ProjectFileName: string; const Commands: TArray<string>): Boolean;
 begin
   Assert(ProjectFileName <> '', 'ProjectFileName cannot be empty');
-  Assert(RsVarsPath <> '', 'RsVarsPath must not be empty');
+  Assert(Commands <> nil, 'Commands must not be empty');
 
-  var CmdLine := '"' + RsVarsPath + '" && @MsBuild "' + ProjectFileName + '" ' + Args;
+  var CmdLine := string.Join(' && ', Commands);
+  CmdLine := CmdLine.Replace('<dproj>', ProjectFileName);
   var Output := '';
   var BytesRead := FProcessRunner.ExecAndCapture(CmdLine, Output);
   Result := (BytesRead > 0) and (not ContainsText(Output, 'Could not compile'));
